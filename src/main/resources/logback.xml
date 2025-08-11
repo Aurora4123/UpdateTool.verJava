@@ -2,7 +2,7 @@
 <configuration scan="true">
 
     <!-- 日志文件保存路径（由代码动态注入 JAR 目录） -->
-    <property name="LOG_HOME" value= "./logs" />
+    <property name="LOG_HOME" value= "./" />
 
     <!-- 控制台输出 -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">

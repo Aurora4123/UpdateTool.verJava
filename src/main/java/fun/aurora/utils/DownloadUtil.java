@@ -165,7 +165,6 @@ public class DownloadUtil {
             logger.error("下载过程中发生错误: ", e);
             return -1;
         }
-        logger.info("下载完成！");
         return 0;
     }
     
