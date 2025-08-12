@@ -67,6 +67,7 @@ public class DownloadUtil {
                 }
             }
             if(saveFile.exists()){
+                logger.info("文件{}已存在，正在检查文件sha256", saveFile.getAbsolutePath());
                 if(verifyFileWithSha256(saveFile, expectedSha256)){
                     logger.info("文件{}已存在，无需下载，跳过", saveFile.getAbsolutePath());
                     return 0;

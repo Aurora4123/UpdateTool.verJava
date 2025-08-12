@@ -30,6 +30,7 @@ public class FileUtil {
     public static void copyFile(String srcFilePath, String destFilePath) throws IOException {
         File srcFile = new File(srcFilePath);
         File destFile = new File(destFilePath);
+        logger.info("尝试复制文件{} -> {}", srcFilePath, destFilePath);
         if(srcFile.exists()) {
             destFile.getParentFile().mkdirs();
             try(FileChannel src = new FileInputStream(srcFile).getChannel();

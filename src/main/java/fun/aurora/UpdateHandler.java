@@ -12,7 +12,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class UpdateHandler {
-    private static UpdateList updateList = null;
+    private static final UpdateList updateList;
     private static final Logger logger = LoggerFactory.getLogger(UpdateHandler.class);
     static {
         updateList = JSONUtil.parseUpdateList(new File("update.json"));

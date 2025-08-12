@@ -11,13 +11,10 @@
         </encoder>
     </appender>
 
-    <!-- 文件输出（每天滚动） -->
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_HOME}/updateTool.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_HOME}/app.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>30</maxHistory>
-        </rollingPolicy>
+    <!-- 文件输出（每次运行生成单独的日志文件） -->
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <!-- 动态设置日志文件名 -->
+        <file>${LOG_HOME}/${logFileName:-update.log}</file>
         <encoder charset="UTF-8">
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>

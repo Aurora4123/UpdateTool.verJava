@@ -9,27 +9,44 @@ import java.lang.instrument.Instrumentation;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class UpdateAgent {
     private static final Logger logger = LoggerFactory.getLogger(UpdateAgent.class);
+    private static final String DEFAULT_UPDATE_URL = "https://web.nyauru.cn/update.json";
     public static void main(String[] args){
         System.out.println("正在使用命令行模式，尝试拉起更新中...");
-        logger.warn("为避免对您的系统造成异常，请在minecraft版本目录下使用本工具");
-        doUpdate();
+        if(args.length == 0){
+            doUpdate(null);
+        } else {
+            doUpdate(args[0]);
+        }
     }
 
     public static void premain(String args, Instrumentation inst) {
         System.out.println("正在使用agent模式，尝试拉起更新中");
-        doUpdate();
+        doUpdate(args);
     }
 
     public static void agentmain(String args, Instrumentation inst) {
         System.out.println("加载中...");
-        doUpdate();
+        doUpdate(args);
     }
 
-    private static void doUpdate() {
-        if (DownloadUtil.downloadFromUrlWithAutoFilename("https://web.nyauru.cn/update.json") != 0) {
+    private static void doUpdate(String url) {
+        logger.info("==================================================");
+        logger.info("UpdateTool log");
+        logger.info("ver: {}", UpdateHandler.class.getPackage().getImplementationVersion());
+        logger.info("Launch Time: {}", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        logger.info("==================================================");
+        logger.warn("为避免对您的系统造成异常，请在minecraft版本目录下使用本工具");
+        
+        if(url == null){
+            url = DEFAULT_UPDATE_URL;
+            logger.warn("未指定更新地址，使用默认地址：{}", url);
+        }
+        if (DownloadUtil.downloadFromUrlWithAutoFilename(url) != 0) {
             logger.error("获取更新列表失败，请检查网络连接！");
         }
         logger.info("获取更新列表成功！");
@@ -43,20 +60,11 @@ public class UpdateAgent {
         }
         logger.info("正在删除旧文件...");
         UpdateHandler.deleteUpdate();
-        logger.info("更新完成！");
-
-
+        logger.info("更新完成！程序将在5s后退出");
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            logger.error("等待过程出现错误: {}", e.getMessage());
+        }
     }
-//    private static void setLoggerPath() throws URISyntaxException {
-//        Path jarDir = Paths.get(UpdateAgent.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
-//        System.setProperty("JAR_DIR", jarDir.toAbsolutePath().toString());
-//    }
-//    static {
-//        try {
-//            Path jarDir = Paths.get(UpdateAgent.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
-//            System.setProperty("JAR_DIR", jarDir.toAbsolutePath().toString());
-//        } catch (URISyntaxException e) {
-//            System.out.println("获取JAR目录失败！");
-//        }
-//    }
 }
