@@ -20,8 +20,6 @@ public class DownloadUtil {
     public static int download(String url, String fileName) {
         try{
             Path jarDir = Paths.get(DownloadUtil.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
-            System.setProperty("JAR_DIR", jarDir.toAbsolutePath().toString());
-            logger.info("当前工作目录为：{}", jarDir);
             File save = jarDir.resolve(fileName).toFile();
             downloadFromURL(url, save);
         } catch (Exception e) {

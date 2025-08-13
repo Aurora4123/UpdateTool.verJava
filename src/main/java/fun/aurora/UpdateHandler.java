@@ -19,6 +19,10 @@ public class UpdateHandler {
     }
     public static void downloadUpdate() {
         boolean success = true;
+        if(updateList == null){
+            logger.error("无法获取更新列表");
+            System.exit(5);
+        }
         for(DownloadItem item : updateList.download) {
             int result = DownloadUtil.downloadToPath(item.url, item.path, item.sha256);
             if(result != 0) {
