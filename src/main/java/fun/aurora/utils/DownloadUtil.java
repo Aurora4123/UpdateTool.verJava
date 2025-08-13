@@ -55,7 +55,8 @@ public class DownloadUtil {
     // 支持指定完整文件路径的下载方法
     public static int downloadToPath(String url, String filePath, String expectedSha256) {
         try {
-            File saveFile = new File(filePath);
+            Path jarDir = Paths.get(DownloadUtil.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
+            File saveFile = jarDir.resolve(filePath).toFile();
             // 确保目标目录存在
             File parentDir = saveFile.getParentFile();
             if (parentDir != null && !parentDir.exists()) {
@@ -140,8 +141,9 @@ public class DownloadUtil {
     }
 
     private static void downloadFromURL(String url, File saveFile) throws IOException {
-        logger.info("正在下载{}...", saveFile.getName());
+        logger.info("下载文件:{}...", saveFile.getName());
         URL fileURL = new URL(url);
+        logger.info("正在连接到下载地址: {}", url);
         URLConnection conn = fileURL.openConnection();
         conn.setUseCaches(false);
         conn.setConnectTimeout(10000);
@@ -150,6 +152,7 @@ public class DownloadUtil {
         try(InputStream inputStream = conn.getInputStream();
             FileOutputStream outputStream = new FileOutputStream(saveFile)
         ) {
+            logger.info("正在下载文件: {}", saveFile.getName());
             byte[] buffer = new byte[8192];
             int bytesRead;
             while ((bytesRead = inputStream.read(buffer)) != -1) {

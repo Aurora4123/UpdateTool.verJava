@@ -10,14 +10,26 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class UpdateHandler {
-    private static final UpdateList updateList;
+    private static UpdateList updateList;
     private static final Logger logger = LoggerFactory.getLogger(UpdateHandler.class);
+    private static Path pathPrefix;
     static {
-        updateList = JSONUtil.parseUpdateList(new File("update.json"));
+
+        try {
+            Path jarPath = Paths.get(UpdateAgent.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
+            pathPrefix = jarPath;
+            updateList = JSONUtil.parseUpdateList(jarPath.resolve("update.json").toFile());
+        } catch (URISyntaxException e) {
+            logger.error("无法获取Jar路径");
+        }
+
     }
-    public static void downloadUpdate() {
+    public static void downloadUpdate(){
         boolean success = true;
         if(updateList == null){
             logger.error("无法获取更新列表");
@@ -37,12 +49,12 @@ public class UpdateHandler {
     }
     public static void copyUpdate() throws IOException {
         for(fun.aurora.utils.json.CopyItem item : updateList.copy) {
-            FileUtil.copyFile(item.file, item.path);
+            FileUtil.copyFile(pathPrefix.resolve(item.file).toString(), pathPrefix.resolve(item.path).toString());
         }
     }
     public static void deleteUpdate() {
         for(fun.aurora.utils.json.DeleteItem item : updateList.delete) {
-            FileUtil.deleteFile(item.deletefile);
+            FileUtil.deleteFile(pathPrefix.resolve(item.deletefile).toString());
         }
     }
 }
