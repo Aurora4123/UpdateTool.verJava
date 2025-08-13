@@ -15,7 +15,7 @@ public class UpdateAgent {
     private static final Logger logger = LoggerFactory.getLogger(UpdateAgent.class);
     private static final String DEFAULT_UPDATE_URL = "https://web.nyauru.cn/update.json";
     public static void main(String[] args){
-        logger.info("正在使用命令行模式，尝试拉起更新中...");
+        logger.info("启动中...");
         try {
             Path jarPath = Paths.get(UpdateAgent.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
             logger.info("请注意，当前程序的工作目录为{}", jarPath);
