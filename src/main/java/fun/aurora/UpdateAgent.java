@@ -25,13 +25,7 @@ public class UpdateAgent {
         if(args.length == 0){
             doUpdate(null);
         } else {
-            if(urlCheck(args[0])) {
-                doUpdate(args[0]);
-            } else {
-                logger.error("无效的URL: {}", args[0]);
-                logger.warn("URL需要以http://或https://开头！你个⑨");
-                System.exit(9);
-            }
+            doUpdateWithURLCheck(args[0]);
         }
     }
 
@@ -42,7 +36,12 @@ public class UpdateAgent {
 
     public static void agentmain(String args, Instrumentation inst) {
         logger.info("正在使用agent动态加载模式，启动更新中...");
-        doUpdate(args);
+        if(args == null){
+            doUpdate(args);
+        } else {
+            doUpdateWithURLCheck(args);
+        }
+
     }
 
     private static void doUpdate(String url) {
@@ -77,6 +76,15 @@ public class UpdateAgent {
         } catch (InterruptedException e) {
             logger.error("等待过程出现错误: {}", e.getMessage());
         }
+    }
+
+    private static void doUpdateWithURLCheck(String url){
+        if(!urlCheck(url)){
+            logger.error("无效的URL: {}", url);
+            logger.warn("URL需要以http://或https://开头！你个⑨");
+            System.exit(9);
+        }
+        doUpdate(url);
     }
     public static boolean urlCheck(String url){
         if(!url.startsWith("https://")&&!url.startsWith("http://")){
