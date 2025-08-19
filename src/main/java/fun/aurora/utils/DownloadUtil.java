@@ -153,10 +153,52 @@ public class DownloadUtil {
             FileOutputStream outputStream = new FileOutputStream(saveFile)
         ) {
             logger.info("正在下载文件: {}", saveFile.getName());
+            
             byte[] buffer = new byte[8192];
             int bytesRead;
+            long totalBytesRead = 0;
+            long startTime = System.currentTimeMillis();
+            long lastUpdateTime = startTime;
+            long lastBytesRead = 0;
+            
+            // 获取文件总大小
+            long fileSize = conn.getContentLengthLong();
+            boolean hasFileSize = fileSize > 0;
+            
             while ((bytesRead = inputStream.read(buffer)) != -1) {
                 outputStream.write(buffer, 0, bytesRead);
+                totalBytesRead += bytesRead;
+                
+                // 每隔500毫秒更新一次进度
+                long currentTime = System.currentTimeMillis();
+                if (currentTime - lastUpdateTime > 500) {
+                    long deltaTime = currentTime - lastUpdateTime;
+                    long deltaBytes = totalBytesRead - lastBytesRead;
+                    double speed = (deltaBytes * 1000.0) / (deltaTime * 1024); // KB/s
+
+                    if (hasFileSize) {
+                        int progress = (int) ((totalBytesRead * 100) / fileSize);
+                        logger.info("下载进度: {}% ({}/{} bytes, {} KB/s)",
+                            progress, totalBytesRead, fileSize, String.format("%.2f", speed));
+                    } else {
+                        logger.info("已下载: {} bytes, {} KB/s", totalBytesRead, String.format("%.2f", speed));
+                    }
+                    
+                    lastUpdateTime = currentTime;
+                    lastBytesRead = totalBytesRead;
+                }
+            }
+            
+            // 下载完成，显示最终统计
+            long totalTime = System.currentTimeMillis() - startTime;
+            double averageSpeed = (totalBytesRead * 1000.0) / (totalTime * 1024); // KB/s
+            
+            if (hasFileSize) {
+                logger.info("下载完成: 100% ({}/{} bytes, 平均速度: {} KB/s, 耗时: {} ms)",
+                    totalBytesRead, fileSize, String.format("%.2f",averageSpeed), totalTime);
+            } else {
+                logger.info("下载完成: 总计 {} bytes, 平均速度: {} KB/s, 耗时: {} ms",
+                    totalBytesRead, String.format("%.2f",averageSpeed), totalTime);
             }
         }
     }

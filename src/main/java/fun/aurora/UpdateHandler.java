@@ -48,11 +48,19 @@ public class UpdateHandler {
         }
     }
     public static void copyUpdate() throws IOException {
+        if (updateList.copy == null) {
+            logger.warn("没有需要复制的文件!");
+            return;
+        }
         for(fun.aurora.utils.json.CopyItem item : updateList.copy) {
             FileUtil.copyFile(pathPrefix.resolve(item.file).toString(), pathPrefix.resolve(item.path).toString());
         }
     }
     public static void deleteUpdate() {
+        if (updateList.delete == null) {
+            logger.warn("没有需要删除的文件!");
+            return;
+        }
         for(fun.aurora.utils.json.DeleteItem item : updateList.delete) {
             FileUtil.deleteFile(pathPrefix.resolve(item.deletefile).toString());
         }
